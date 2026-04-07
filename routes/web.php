@@ -3,5 +3,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return 'Laravel jalan!';
+    return 'Muhammad Dihya Khalifa 24.12.3272';
 });
