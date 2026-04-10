@@ -11,6 +11,7 @@
     <div class="max-w-3xl mx-auto p-6 mt-10">
         
         <nav class="flex flex-wrap justify-center gap-4 mb-10">
+            <a href="/home" class="px-5 py-2 bg-white text-green-600 font-semibold rounded-lg shadow hover:bg-green-600 hover:text-white transition duration-300">Home</a>
             <a href="/profil" class="px-5 py-2 bg-white text-green-600 font-semibold rounded-lg shadow hover:bg-green-600 hover:text-white transition duration-300">Profil</a>
             <a href="/katalog" class="px-5 py-2 bg-white text-green-600 font-semibold rounded-lg shadow hover:bg-green-600 hover:text-white transition duration-300">Katalog</a>
             <a href="/bantuan" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-300">Bantuan</a>
