@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController; 
 use App\Http\Controllers\Admin\DashboardController; 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CategoryController;
 
 Route::get('/', function () {
     return ('home');
@@ -57,3 +58,5 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // dan seterusnya...
 
 });
+
+Route::get('/categories', [CategoryController::class, 'index']);
