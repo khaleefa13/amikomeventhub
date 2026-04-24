@@ -151,6 +151,88 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Event Card 4 -->
+            <div
+                class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="assets/seminar.png" alt="Hackathon 2024"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div
+                        class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
+                        Seminar</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">Seminar Online</h3>
+                    <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>18-20 October 2024</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <span class="text-2xl font-black text-indigo-600">Gratis</span>
+                        <a href="event-detail.html"
+                            class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat
+                            Detail</a>
+                    </div>
+                </div>
+            </div>
+             <!-- Event Card 5 -->
+            <div
+                class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="assets/e sport.png" alt="Hackathon 2024"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div
+                        class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
+                        Game</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">E Sport</h3>
+                    <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>18-20 October 2024</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <span class="text-2xl font-black text-indigo-600">Gratis</span>
+                        <a href="event-detail.html"
+                            class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat
+                            Detail</a>
+                    </div>
+                </div>
+            </div>
+             <!-- Event Card 6 -->
+            <div
+                class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="assets/hiburan.png" alt="Hackathon 2024"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div
+                        class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
+                        Seminar</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">Seminar Online</h3>
+                    <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>18-20 October 2024</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <span class="text-2xl font-black text-indigo-600">Gratis</span>
+                        <a href="event-detail.html"
+                            class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat
+                            Detail</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
  @endsection
