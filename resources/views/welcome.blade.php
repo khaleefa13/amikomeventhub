@@ -141,7 +141,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>18-20 October 2024</span>
+                        <span>18-20 October 2025</span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t">
                         <span class="text-2xl font-black text-indigo-600">Gratis</span>
@@ -169,7 +169,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>18-20 October 2024</span>
+                        <span>18-20 October 2026</span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t">
                         <span class="text-2xl font-black text-indigo-600">Gratis</span>
@@ -196,7 +196,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>18-20 October 2024</span>
+                        <span>12-01 February 2026</span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t">
                         <span class="text-2xl font-black text-indigo-600">Gratis</span>
@@ -214,19 +214,19 @@
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div
                         class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
-                        Seminar</div>
+                        Trip</div>
                 </div>
                 <div class="p-6">
-                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">Seminar Online</h3>
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">Open Trip</h3>
                     <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>18-20 October 2024</span>
+                        <span>01-21 September 2026</span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t">
-                        <span class="text-2xl font-black text-indigo-600">Gratis</span>
+                        <span class="text-2xl font-black text-indigo-600">Rp 3jt</span>
                         <a href="event-detail.html"
                             class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat
                             Detail</a>
