@@ -18,13 +18,13 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 // ==========================================
 // RUTE USER AREA & HALAMAN STATIS
 // ==========================================
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/home', function () { return view('home'); });
-Route::get('/tentang', function () { return '<h1>Ini adalah Halaman Tentang Aplikasi Event Hub</h1>'; });
-Route::get('/kontak', function () { return redirect('/'); });
-Route::get('/profil', function () { return view('profil'); });
-Route::get('/katalog', function () { return view('katalog'); });
-Route::get('/bantuan', function () { return view('bantuan'); });
+// Route::get('/', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', function () { return view('home'); });
+// Route::get('/tentang', function () { return '<h1>Ini adalah Halaman Tentang Aplikasi Event Hub</h1>'; });
+// Route::get('/kontak', function () { return redirect('/'); });
+// Route::get('/profil', function () { return view('profil'); });
+// Route::get('/katalog', function () { return view('katalog'); });
+// Route::get('/bantuan', function () { return view('bantuan'); });
 
 // Fitur Interaksi User
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
