@@ -36,8 +36,8 @@ Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 // RUTE ADMIN AREA
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
-    
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     
     Route::get('/transactions', [DashboardController::class, 'transactions'])->name('transactions');
