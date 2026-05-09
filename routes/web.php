@@ -28,8 +28,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Fitur Interaksi User
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
-Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
-Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
+Route::get('/checkout/{id}', [EventController::class, 'checkout'])->name('checkout');
+Route::get('/ticket/{id}', [EventController::class, 'ticket'])->name('ticket');
 
 
 // ==========================================
