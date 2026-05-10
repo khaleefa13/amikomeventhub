@@ -14,17 +14,13 @@ use App\Http\Controllers\Admin\CategoryController;
 // Perhatikan baris di bawah ini: Kita beri alias agar tidak bentrok dengan EventController milik User
 use App\Http\Controllers\Admin\EventController as AdminEventController; 
 
+use App\Http\Controllers\TransactionController;
 
 // ==========================================
 // RUTE USER AREA & HALAMAN STATIS
 // ==========================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
-// Route::get('/home', function () { return view('home'); });
-// Route::get('/tentang', function () { return '<h1>Ini adalah Halaman Tentang Aplikasi Event Hub</h1>'; });
-// Route::get('/kontak', function () { return redirect('/'); });
-// Route::get('/profil', function () { return view('profil'); });
-// Route::get('/katalog', function () { return view('katalog'); });
-// Route::get('/bantuan', function () { return view('bantuan'); });
+
 
 // Fitur Interaksi User
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
@@ -42,5 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/transactions', [DashboardController::class, 'transactions'])->name('transactions');
     Route::resource('events', AdminEventController::class);
+    Route::get('/transactions/export/excel', [TransactionController::class, 'exportExcel'])->name('transaksi.export.excel');
+    Route::get('/transactions/export/pdf', [TransactionController::class, 'exportPdf'])->name('transaksi.export.pdf');
 
 });
