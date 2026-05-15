@@ -13,7 +13,14 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 // Perhatikan baris di bawah ini: Kita beri alias agar tidak bentrok dengan EventController milik User
 use App\Http\Controllers\Admin\EventController as AdminEventController; 
+use App\Http\Controllers\Admin\PartnerController;
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    // ... rute event sebelumnya ...
+    
+    // Rute CRUD Partner
+    Route::resource('partners', PartnerController::class);
+});
 use App\Http\Controllers\TransactionController;
 
 // ==========================================
@@ -40,5 +47,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('events', AdminEventController::class);
     Route::get('/transactions/export/excel', [TransactionController::class, 'exportExcel'])->name('transaksi.export.excel');
     Route::get('/transactions/export/pdf', [TransactionController::class, 'exportPdf'])->name('transaksi.export.pdf');
+    // Rute CRUD Partner
+    Route::resource('partners', PartnerController::class);
 
 });

@@ -13,12 +13,19 @@
 </div>
 
 <div class="flex flex-col md:flex-row gap-4 mb-8">
-    <div class="flex-1 relative">
+    <!-- FORM PENCARIAN DIMULAI DI SINI -->
+    <form action="{{ route('admin.events.index') }}" method="GET" class="flex-1 relative">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
-        <input type="text" placeholder="Cari nama event..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-medium text-sm transition-all text-slate-700">
-    </div>
+        <!-- Tambahkan name="search" dan value="{{ request('search') }}" -->
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama event (tekan Enter)..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-medium text-sm transition-all text-slate-700">
+        
+        <!-- Tombol submit tersembunyi agar form bisa disubmit dengan tombol Enter -->
+        <button type="submit" class="hidden"></button>
+    </form>
+    <!-- FORM PENCARIAN SELESAI -->
+
     <select class="border border-slate-200 rounded-2xl px-5 py-3 bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm font-bold text-slate-600 transition-all cursor-pointer w-full md:w-auto">
         <option>Semua Kategori</option>
         <option>Musik</option>
@@ -43,7 +50,10 @@
             <tbody class="divide-y border-t border-slate-50 text-sm">
                 @forelse($events as $index => $event)
                 <tr class="hover:bg-slate-50/50 transition-all group">
-                    <td class="py-6 px-8 text-slate-500 font-bold">{{ $index + 1 }}</td>
+                    <td class="py-6 px-8 text-slate-500 font-bold">
+                        <!-- Perbaikan penomoran agar tetap urut saat difilter -->
+                        {{ $index + 1 }}
+                    </td>
                     <td class="py-6 px-8">
                         @if($event->poster)
                             <img src="{{ asset('storage/' . $event->poster) }}" alt="Poster" class="w-14 h-20 object-cover rounded-xl shadow-sm border border-slate-200">
@@ -87,8 +97,20 @@
                             <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mb-4">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                             </div>
-                            <p class="text-slate-800 font-black text-lg">Belum ada event</p>
-                            <p class="text-sm text-slate-500 mt-1">Klik tombol "+ Tambah Event Baru" di kanan atas untuk memulai.</p>
+                            <!-- Pesan kosong disesuaikan agar lebih informatif jika tidak ada hasil pencarian -->
+                            <p class="text-slate-800 font-black text-lg">
+                                {{ request('search') ? 'Event tidak ditemukan' : 'Belum ada event' }}
+                            </p>
+                            <p class="text-sm text-slate-500 mt-1">
+                                {{ request('search') ? 'Coba gunakan kata kunci lain.' : 'Klik tombol "+ Tambah Event Baru" di kanan atas untuk memulai.' }}
+                            </p>
+                            
+                            <!-- Tombol reset pencarian jika sedang mencari -->
+                            @if(request('search'))
+                                <a href="{{ route('admin.events.index') }}" class="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition">
+                                    Tampilkan Semua Event
+                                </a>
+                            @endif
                         </div>
                     </td>
                 </tr>

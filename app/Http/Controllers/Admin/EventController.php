@@ -9,10 +9,20 @@ use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    // Menampilkan halaman Kelola Event (Read)
-    public function index()
+    // Menampilkan halaman Kelola Event (Read) & Fitur Search
+    public function index(Request $request)
     {
-        $events = Event::latest()->get();
+        // Memulai query builder dari model Event
+        $query = Event::query();
+
+        // Mengecek apakah parameter pencarian ada dan tidak kosong
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_event', 'LIKE', '%' . $request->search . '%');
+        }
+
+        // Mengambil hasil, diurutkan dari yang terbaru
+        $events = $query->latest()->get();
+        
         return view('admin.events.index', compact('events'));
     }
 

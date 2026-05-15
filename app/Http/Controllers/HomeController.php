@@ -2,17 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event; // Pastikan Model Event dipanggil di atas
+use App\Models\Partner;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    // Tambahkan Request $request di dalam parameter
+    public function index(Request $request) 
     {
-        // Mengambil semua data event dari database (yang terbaru di atas)
-        $events = Event::latest()->get(); 
-        
-        // Membuka file welcome.blade.php sambil membawa data $events
-        return view('welcome', compact('events')); 
+        $partners = Partner::latest()->get();
+
+        // 1. Memulai query builder untuk Event
+        $query = Event::query();
+
+        // 2. Cek apakah ada request filter 'category' yang diklik user
+        if ($request->has('category') && $request->category != '') {
+            $query->where('kategori', $request->category);
+        }
+
+        // 3. Ambil data setelah difilter (atau semua data jika tidak ada filter)
+        $events = $query->latest()->get();
+
+        $categories = [
+            'Musik', 
+            'Tech', 
+            'Workshop', 
+            'Seminar', 
+            'Olahraga', 
+            'Seni'
+        ];
+
+        return view('welcome', compact('partners', 'categories', 'events'));
     }
 }
