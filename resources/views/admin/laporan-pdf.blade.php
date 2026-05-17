@@ -3,9 +3,12 @@
 <head>
     <title>Laporan Transaksi</title>
     <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body { font-family: sans-serif; }
+        h2 { text-align: center; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 12px; }
+        th { background-color: #f8fafc; color: #333; }
+        .text-gray { color: #64748b; font-size: 10px; display: block; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -24,10 +27,17 @@
             @foreach($transactions as $trx)
             <tr>
                 <td>{{ $trx->order_id }}</td>
-                <td>{{ $trx->nama_pembeli }}</td>
-                <td>{{ $trx->event }}</td>
+                <td>
+                    <strong>{{ $trx->customer_name }}</strong>
+                    <span class="text-gray">{{ $trx->customer_email }}</span>
+                </td>
+                <td>
+                    {{ $trx->event->nama_event ?? 'Event Terhapus' }}
+                </td>
                 <td>{{ $trx->status }}</td>
-                <td>Rp {{ number_format($trx->total_tagihan, 0, ',', '.') }}</td>
+                <td>
+                    Rp {{ number_format($trx->total_price, 0, ',', '.') }}
+                </td>
             </tr>
             @endforeach
         </tbody>

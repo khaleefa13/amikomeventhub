@@ -33,7 +33,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
 Route::get('/checkout/{id}', [EventController::class, 'checkout'])->name('checkout');
 Route::get('/ticket/{id}', [EventController::class, 'ticket'])->name('ticket');
-
+// TAMBAHKAN RUTE INI UNTUK MEMPROSES DATA
+Route::post('/checkout/{id}/process', [EventController::class, 'processCheckout'])->name('checkout.process');
 
 // ==========================================
 // RUTE ADMIN AREA
@@ -49,5 +50,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/transactions/export/pdf', [TransactionController::class, 'exportPdf'])->name('transaksi.export.pdf');
     // Rute CRUD Partner
     Route::resource('partners', PartnerController::class);
+    Route::get('/transactions/{id}/edit', [DashboardController::class, 'editTransaction'])->name('transactions.edit');
+    Route::put('/transactions/{id}', [DashboardController::class, 'updateTransaction'])->name('transactions.update');
+    Route::delete('/transactions/{id}', [DashboardController::class, 'destroyTransaction'])->name('transactions.destroy');
 
 });
