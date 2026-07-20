@@ -3,7 +3,7 @@
 @section('content')
 <div class="mb-10">
     <h1 class="text-3xl font-black text-slate-800">Dashboard Ringkasan</h1>
-    <p class="text-slate-500 font-medium mt-1">Selamat datang kembali, Admin!</p>
+    <p class="text-slate-500 font-medium mt-1">Selamat datang kembali, <span class="font-bold">{{ auth()->user()->name }}</span>!</p>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">

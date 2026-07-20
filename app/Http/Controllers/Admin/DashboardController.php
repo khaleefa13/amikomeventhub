@@ -7,20 +7,33 @@ use App\Models\Transaction;
 use App\Models\Event; 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth; // <-- Tambahan untuk cek user login
 
 class DashboardController extends Controller
 {
     // FUNGSI UNTUK HALAMAN DASHBOARD UTAMA
     public function index()
     {
-        // Menggunakan 'total_price' sesuai database
-        $totalPendapatan = Transaction::where('status', 'Success')->sum('total_price');
+        $user = Auth::user();
+        
+        // 1. Siapkan Base Query
+        $queryTransaction = Transaction::query();
+        $queryEvent = Event::query();
 
-        $tiketTerjual = Transaction::where('status', 'Success')->count();
-        $eventAktif = Event::whereDate('tanggal', '>=', Carbon::today())->count();
-        $pesananPending = Transaction::where('status', 'Pending')->count();
+        // 2. SENSOR MULTI-TENANT: Jika dia organizer, batasi datanya!
+        if ($user->role === 'organizer') {
+            $queryTransaction->whereHas('event', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+            $queryEvent->where('user_id', $user->id);
+        }
 
-        $recentTransactions = Transaction::with('event')->latest()->take(5)->get();
+        // 3. Eksekusi Query (menggunakan 'clone' agar base query tidak tertimpa)
+        $totalPendapatan = (clone $queryTransaction)->where('status', 'Success')->sum('total_price');
+        $tiketTerjual = (clone $queryTransaction)->where('status', 'Success')->count();
+        $eventAktif = (clone $queryEvent)->whereDate('tanggal', '>=', Carbon::today())->count();
+        $pesananPending = (clone $queryTransaction)->where('status', 'Pending')->count();
+        $recentTransactions = (clone $queryTransaction)->with('event')->latest()->take(5)->get();
 
         return view('admin.dashboard', compact(
             'totalPendapatan', 
@@ -34,7 +47,15 @@ class DashboardController extends Controller
     // FUNGSI UNTUK HALAMAN LAPORAN TRANSAKSI (Read & Filter)
     public function transactions(Request $request)
     {
+        $user = Auth::user();
         $query = Transaction::with('event');
+
+        // SENSOR MULTI-TENANT
+        if ($user->role === 'organizer') {
+            $query->whereHas('event', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
 
         // Menggunakan 'customer_name' dan 'customer_email' sesuai database
         if ($request->filled('search')) {
@@ -73,8 +94,17 @@ class DashboardController extends Controller
     // FUNGSI UNTUK MENAMPILKAN FORM EDIT TRANSAKSI
     public function editTransaction($id)
     {
-        // Ambil data transaksi berdasarkan ID beserta relasi event-nya
-        $transaction = Transaction::with('event')->findOrFail($id);
+        $user = Auth::user();
+        $query = Transaction::with('event');
+        
+        // SENSOR PENGAMAN: Cegah Organizer A mengedit transaksi Organizer B
+        if ($user->role === 'organizer') {
+            $query->whereHas('event', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        $transaction = $query->findOrFail($id);
         
         return view('admin.transactions_edit', compact('transaction'));
     }
@@ -82,7 +112,6 @@ class DashboardController extends Controller
     // FUNGSI UNTUK MENYIMPAN PERUBAHAN TRANSAKSI
     public function updateTransaction(Request $request, $id)
     {
-        // Validasi inputan dari admin
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
@@ -90,8 +119,16 @@ class DashboardController extends Controller
             'status' => 'required|in:Success,Pending,Expired,Free',
         ]);
 
-        // Cari transaksi dan update datanya
-        $transaction = Transaction::findOrFail($id);
+        $user = Auth::user();
+        $query = Transaction::query();
+        
+        if ($user->role === 'organizer') {
+            $query->whereHas('event', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        $transaction = $query->findOrFail($id);
         $transaction->update([
             'customer_name' => $request->customer_name,
             'customer_email' => $request->customer_email,
@@ -105,8 +142,16 @@ class DashboardController extends Controller
     // FUNGSI UNTUK MENGHAPUS TRANSAKSI
     public function destroyTransaction($id)
     {
-        // Cari transaksi lalu hapus
-        $transaction = Transaction::findOrFail($id);
+        $user = Auth::user();
+        $query = Transaction::query();
+        
+        if ($user->role === 'organizer') {
+            $query->whereHas('event', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        $transaction = $query->findOrFail($id);
         $transaction->delete();
 
         return redirect()->route('admin.transactions')->with('success', 'Data transaksi berhasil dihapus!');

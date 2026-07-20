@@ -67,25 +67,43 @@
         <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
             <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">Data Pemesan</h3>
             
+            @guest
+            <div class="mb-8">
+                <p class="text-sm text-slate-500 mb-3 text-center font-medium">Isi form lebih cepat, tanpa perlu mengetik manual:</p>
+                <a href="{{ route('google.login') }}" class="w-full flex items-center justify-center px-5 py-4 border-2 border-slate-100 rounded-2xl shadow-sm text-base font-bold text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-200 active:scale-95 transition-all">
+                    <img class="h-6 w-6 mr-3" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo">
+                    Isi Otomatis via Google
+                </a>
+
+                <div class="relative mt-8 mb-2">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-slate-400 font-bold uppercase tracking-widest text-xs">Atau Isi Manual</span>
+                    </div>
+                </div>
+            </div>
+            @endguest
             <form id="checkoutForm" action="{{ route('checkout.process', $event->id) }}" method="POST" class="space-y-6">
                 @csrf
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama Lengkap</label>
-                    <input type="text" name="customer_name" placeholder="Masukkan nama sesuai identitas" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
+                    <input type="text" name="customer_name" value="{{ old('customer_name', auth()->user()?->name) }}" placeholder="Masukkan nama sesuai identitas" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Email Aktif</label>
-                        <input type="email" name="customer_email" placeholder="contoh@gmail.com" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
+                        <input type="email" name="customer_email" value="{{ old('customer_email', auth()->user()?->email) }}" placeholder="contoh@gmail.com" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
                         <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket akan dikirim ke email ini</p>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">No. WhatsApp</label>
-                        <input type="tel" name="customer_phone" placeholder="08xxxxxxx" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
+                        <input type="tel" name="customer_phone" value="{{ old('customer_phone') }}" placeholder="08xxxxxxx" class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all">
+                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all mt-4">
                     Lanjutkan ke Pembayaran
                 </button>
                 <p class="text-center text-xs text-slate-400 font-medium">Dengan menekan tombol di atas, Anda menyetujui Syarat & Ketentuan kami.</p>

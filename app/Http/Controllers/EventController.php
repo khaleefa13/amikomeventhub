@@ -6,50 +6,41 @@ use App\Models\Event;
 use App\Models\Transaction; 
 use Illuminate\Http\Request;
 
-// 🌟 WAJIB DITAMBAHKAN: Panggil fungsi Midtrans
+// 🌟 PANGGIL KOMPONEN MIDTRANS & NOTIFIKASI
 use Midtrans\Config;
 use Midtrans\Snap;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use App\Mail\SendTicketMail;
 
 class EventController extends Controller
 {
-    // Menerima $id dari URL yang diklik
     public function show($id)
     {
-        // Cari data event di database berdasarkan ID
         $event = Event::findOrFail($id);
-        
-        // Buka halaman event-detail dan kirimkan data $event ke sana
         return view('event-detail', compact('event'));
     }
 
-    // Untuk halaman checkout (bawa data event-nya juga)
     public function checkout($id)
     {
         $event = Event::findOrFail($id);
-        
         return view('checkout', compact('event'));
     }
 
-    // 🌟 FUNGSI DIUBAH: Memproses checkout, kurangi stok, dan amankan Token Midtrans
     public function processCheckout(Request $request, $id)
     {
-        // 1. Validasi inputan user
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
         ]);
 
-        // 2. Ambil data event
         $event = Event::findOrFail($id);
 
-        // 3. Hitung total bayar
         $biayaLayanan = $event->harga > 0 ? 5000 : 0;
         $totalBayar = $event->harga + $biayaLayanan;
 
-        // 4. Simpan ke database Transactions (Status diset PENDING)
-        // Order ID ditambah time() agar dijamin 100% unik di sistem Midtrans
-        $orderId = '#TRX-' . rand(10000, 99999) . '-' . time(); 
+        $orderId = 'TRX-' . rand(10000, 99999) . '-' . time();
         
         $transaction = Transaction::create([
             'event_id' => $event->id,
@@ -58,48 +49,30 @@ class EventController extends Controller
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'total_price' => $totalBayar,
-            'status' => 'Pending', // 👈 Diubah jadi Pending karena belum dibayar
+            'status' => 'Pending',
         ]);
 
-        // ==========================================
-        // 🌟 PERBAIKAN STOK: Update Stok Tiket Event
-        // ==========================================
-        // Kurangi sisa stok sebanyak 1
+        // Kurangi stok sementara
         $event->decrement('total_stok', 1);
-        
-        // Tambah catatan tiket terjual sebanyak 1
         $event->increment('stok_terjual', 1);
-        // ==========================================
 
-        // ==========================================
-        // 5. KONFIGURASI & PROSES MIDTRANS
-        // ==========================================
-        
+        // Konfigurasi Midtrans
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
-        
-        // Memaklumi SSL jika dijalankan di localhost (Laragon/Windows)
-        // Ditambah CURLOPT_HTTPHEADER kosong agar Midtrans tidak error di PHP 8.4
-        // PENTING: Beri tanda komentar (//) pada Config::$curlOptions ini saat nanti diunggah ke hosting!
-        //Config::$curlOptions = [
-           // CURLOPT_SSL_VERIFYPEER => false, 
-           // CURLOPT_SSL_VERIFYHOST => false,
-            //CURLOPT_HTTPHEADER => [] 
-       // ];
+        Config::$overrideNotifUrl = url('/midtrans-callback'); 
+        Config::$curlOptions = [CURLOPT_SSL_VERIFYPEER => false];
 
-        // Susun daftar belanjaan agar Midtrans bisa menghitung tagihan dengan valid
         $itemDetails = [
             [
                 'id' => $event->id,
                 'price' => $event->harga,
                 'quantity' => 1,
-                'name' => substr($event->nama_event, 0, 50), // Batas maksimal karakter Midtrans
+                'name' => substr($event->nama_event, 0, 50),
             ]
         ];
 
-        // Jika ada biaya layanan, masukkan sebagai item terpisah di struk Midtrans
         if ($biayaLayanan > 0) {
             $itemDetails[] = [
                 'id' => 'FEE-01',
@@ -109,7 +82,6 @@ class EventController extends Controller
             ];
         }
 
-        // Siapkan parameter lengkap yang akan dikirim ke server Midtrans
         $params = [
             'transaction_details' => [
                 'order_id' => $orderId,
@@ -123,20 +95,114 @@ class EventController extends Controller
             'item_details' => $itemDetails
         ];
 
-        // Dapatkan Snap Token (Tiket antrean pop-up) dari Midtrans
         $snapToken = Snap::getSnapToken($params);
 
-        // 6. Redirect ke halaman pembayaran (payment.blade.php) bukan langsung ke e-ticket
         return view('payment', compact('snapToken', 'transaction', 'event'));
     }
     
-    // Halaman E-Ticket mengambil data Transaksi
     public function ticket($id)
     {
-        // Cari data Transaksi berdasarkan ID beserta relasi Event-nya
         $transaction = Transaction::with('event')->findOrFail($id);
-        
-        // Buka file ticket.blade.php sambil membawa data transaksi
+
+        // ==========================================
+        // 🌟 SENSOR KEAMANAN TIKET
+        // ==========================================
+        $status = strtolower($transaction->status);
+
+        if ($status === 'pending') {
+            return redirect()->route('home')->with('error', 'Selesaikan pembayaran Anda terlebih dahulu untuk bisa melihat E-Ticket.');
+        }
+
+        if ($status === 'failed' || $status === 'cancel' || $status === 'expire') {
+            return redirect()->route('home')->with('error', 'Transaksi ini telah dibatalkan atau kedaluwarsa.');
+        }
+
         return view('ticket', compact('transaction'));
+    }
+
+    // ==========================================
+    // 🌟 WEBHOOK RECEIVER MIDTRANS
+    // ==========================================
+    public function callback(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
+        if ($hashed == $request->signature_key) {
+            $transaction = Transaction::where('order_id', $request->order_id)->first();
+            
+            if ($transaction) {
+                // JIKA STATUS LUNAS
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    
+                    if ($transaction->status == 'Pending') {
+                        $transaction->update(['status' => 'Success']); 
+
+                        // 🌟 JALANKAN FUNGSI KIRIM EMAIL & WA
+                        $this->kirimNotifikasiTiket($transaction);
+                    }
+                } 
+                // JIKA BATAL / KEDALUWARSA
+                elseif ($request->transaction_status == 'expire' || $request->transaction_status == 'cancel' || $request->transaction_status == 'deny') {
+                    if ($transaction->status == 'Pending') {
+                        $transaction->update(['status' => 'Failed']);
+
+                        // Kembalikan Stok Tiket
+                        $event = Event::find($transaction->event_id);
+                        if ($event) {
+                            $event->increment('total_stok', 1);
+                            $event->decrement('stok_terjual', 1);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return response()->json(['message' => 'Notifikasi Berhasil Diterima']);
+    }
+
+    // ==========================================
+    // 🌟 MESIN PENGIRIM EMAIL & WHATSAPP
+    // ==========================================
+    private function kirimNotifikasiTiket($transaction)
+    {
+        $transaction->load('event');
+
+        // 1. Eksekusi Kirim Email
+        try {
+            Mail::to($transaction->customer_email)->send(new SendTicketMail($transaction));
+        } catch (\Exception $e) {
+            \Log::error('Email Gagal: ' . $e->getMessage());
+        }
+
+        // 2. Eksekusi Kirim WhatsApp via Fonnte
+        try {
+            $tokenWA = env('FONNTE_TOKEN');
+            
+            if ($tokenWA) {
+                $pesanWA = "Halo *" . $transaction->customer_name . "*,\n\n" .
+                           "Pembayaran Anda untuk event *" . $transaction->event->nama_event . "* telah *BERHASIL* diverifikasi! 🎉\n\n" .
+                           "Berikut ringkasan data tiket Anda:\n" .
+                           "• Nomor Struk: " . $transaction->order_id . "\n" .
+                           "• Total Bayar: Rp " . number_format($transaction->total_price, 0, ',', '.') . "\n\n" .
+                           "Silakan buka link di bawah ini untuk melihat dan menyimpan E-Ticket resmi Anda:\n" .
+                           route('ticket', $transaction->id) . "\n\n" .
+                           "Sampai jumpa di lokasi acara!\n\n---\n_Pesan otomatis oleh AmikomEventHub_";
+
+                Http::withHeaders([
+                    'Authorization' => $tokenWA
+                ])->post('https://api.fonnte.com/send', [
+                    'target' => $transaction->customer_phone,
+                    'message' => $pesanWA,
+                    
+                    // 🌟 PERBAIKAN: Memaksa Fonnte mengirim gambar QR Code yang berisi link tiket!
+                    'url' => 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode(route('ticket', $transaction->id)),
+                    
+                    'countryCode' => '62' 
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('WhatsApp Gagal: ' . $e->getMessage());
+        }
     }
 }

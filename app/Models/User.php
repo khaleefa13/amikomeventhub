@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+// 🌟 google_id ditambahkan ke dalam daftar Fillable di bawah ini
+#[Fillable(['name', 'email', 'password', 'google_id', 'role', 'approval_status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -28,5 +29,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    // Relasi: Satu Organizer (User) bisa membuat banyak Event
+    public function events()
+    {
+        return $this->hasMany(Event::class);
     }
 }
