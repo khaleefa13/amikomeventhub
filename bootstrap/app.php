@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
    ->withMiddleware(function (Middleware $middleware) {
     $middleware->validateCsrfTokens(except: [
-        'midtrans/callback', 
+        'midtrans-callback', 
     ]);
     $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
