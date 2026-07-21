@@ -17,7 +17,11 @@ class EventController extends Controller
 {
     public function show($id)
     {
-        $event = Event::findOrFail($id);
+        // 🌟 PERBAIKAN: Memanggil event beserta ulasannya (diurutkan dari yang terbaru)
+        $event = Event::with(['reviews' => function($query) {
+            $query->latest();
+        }])->findOrFail($id);
+        
         return view('event-detail', compact('event'));
     }
 
@@ -195,7 +199,6 @@ class EventController extends Controller
                     'target' => $transaction->customer_phone,
                     'message' => $pesanWA,
                     
-                    // 🌟 PERBAIKAN: Memaksa Fonnte mengirim gambar QR Code yang berisi link tiket!
                     'url' => 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode(route('ticket', $transaction->id)),
                     
                     'countryCode' => '62' 

@@ -110,66 +110,7 @@
         
         <p class="text-center text-xs text-slate-400 font-medium mt-6 no-print">Tunjukkan QR Code ini pada petugas di lokasi acara.</p>
 
-        <!-- ========================================== -->
-        <!-- 🌟 AREA TAMBAHAN UNTUK FORM REVIEW (NO-PRINT) -->
-        <!-- ========================================== -->
-        @php
-            // Mengecek apakah acara sudah lewat hari ini
-            $isPastEvent = \Carbon\Carbon::parse($transaction->event->tanggal)->isPast(); 
-            
-            // Cek apakah user sudah mereview
-            $hasReviewed = \App\Models\Review::where('transaction_id', $transaction->id)->exists();
-        @endphp
-
-        <!-- Form hanya muncul jika tiket Success, Acara sudah lewat, dan belum di-review -->
-        @if(strtolower($transaction->status) == 'success' && $isPastEvent && !$hasReviewed)
-            <div class="no-print mt-8 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
-                <h3 class="font-black text-slate-800 text-xl mb-2">Bagaimana acaranya?</h3>
-                <p class="text-sm text-slate-500 mb-6">Berikan ulasan Anda! Testimoni ini akan membantu penyelenggara untuk membuat acara yang lebih baik lagi.</p>
-                
-                <!-- Peringatan Jika Error/Sukses -->
-                @if(session('success'))
-                    <div class="p-4 mb-6 text-sm text-green-800 bg-green-50 border border-green-200 rounded-xl font-medium">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="p-4 mb-6 text-sm text-red-800 bg-red-50 border border-red-200 rounded-xl font-medium">{{ session('error') }}</div>
-                @endif
-
-                <form action="{{ route('review.store', $transaction->id) }}" method="POST">
-                    @csrf
-                    
-                    <!-- Pilih Bintang -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Penilaian Bintang</label>
-                        <select name="rating" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" required>
-                            <!-- 🌟 PERBAIKAN: Mengembalikan format bintang yang error -->
-                            <option value="5">⭐⭐⭐⭐⭐ (Sangat Bagus)</option>
-                            <option value="4">⭐⭐⭐⭐ (Bagus)</option>
-                            <option value="3">⭐⭐⭐ (Cukup)</option>
-                            <option value="2">⭐⭐ (Kurang)</option>
-                            <option value="1">⭐ (Sangat Kurang)</option>
-                        </select>
-                    </div>
-
-                    <!-- Komentar -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Komentar / Testimoni</label>
-                        <textarea name="comment" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-none" placeholder="Ceritakan pengalaman seru Anda di acara ini..." required></textarea>
-                    </div>
-
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
-                        Kirim Ulasan
-                    </button>
-                </form>
-            </div>
-        @elseif($hasReviewed)
-            <div class="no-print mt-8 p-6 text-center bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-3xl font-medium shadow-sm">
-                <span class="text-2xl block mb-2">⭐⭐⭐⭐⭐</span>
-                Terima kasih, Anda sudah memberikan ulasan untuk event ini!
-            </div>
-        @endif
-
-    </div>
+      
 
 </body>
 </html>

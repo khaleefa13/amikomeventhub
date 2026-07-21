@@ -2,6 +2,7 @@
 
 @section('content')
 <main class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <!-- KOLOM KIRI (POSTER) -->
     <div class="lg:col-span-1">
         <div class="sticky top-32">
             @if($event->poster)
@@ -28,6 +29,7 @@
         </div>
     </div>
 
+    <!-- KOLOM KANAN (DETAIL EVENT) -->
     <div class="lg:col-span-2 space-y-12">
         <div class="space-y-4">
             <span
@@ -119,5 +121,115 @@
             </ul>
         </div>
     </div>
+
+    <!-- ========================================== -->
+    <!-- 🌟 SECTION ULASAN (REVIEW) ALA GOOGLE MAPS -->
+    <!-- ========================================== -->
+    <div class="lg:col-span-3 mt-8 bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+        <h3 class="text-2xl font-black text-slate-800 mb-6">Ulasan & Penilaian</h3>
+        
+        <!-- Notifikasi Sukses/Error -->
+        @if(session('success'))
+            <div class="p-4 mb-6 text-sm text-green-800 bg-green-50 border border-green-200 rounded-xl font-medium">{{ session('success') }}</div>
+        @endif
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- KOLOM KIRI: Statistik & Form -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                
+                <!-- Banner Rating Rata-rata -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center flex flex-col items-center justify-center shadow-inner">
+                    @php
+                        $avgRating = $event->reviews->avg('rating') ?? 0;
+                        $totalReviews = $event->reviews->count();
+                    @endphp
+                    <h4 class="text-6xl font-black text-indigo-600 mb-2">{{ number_format($avgRating, 1) }}</h4>
+                    <div class="text-yellow-400 text-2xl mb-1 tracking-widest">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= round($avgRating)) ⭐ @else <span class="text-slate-300">★</span> @endif
+                        @endfor
+                    </div>
+                    <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mt-2">{{ $totalReviews }} Ulasan</p>
+                </div>
+
+                <!-- Form Tulis Ulasan -->
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <h4 class="font-black text-slate-800 mb-4">Tulis Ulasan Anda</h4>
+                    <form action="{{ route('review.store', $event->id) }}" method="POST">
+                        @csrf
+                        
+                        <!-- Input Nama -->
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Nama Anda</label>
+                            <input type="text" name="name" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm" placeholder="Contoh: John Doe" required>
+                        </div>
+
+                        <!-- Input Bintang -->
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Penilaian</label>
+                            <select name="rating" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm text-slate-700" required>
+                                <option value="5">⭐⭐⭐⭐⭐ (Sangat Bagus)</option>
+                                <option value="4">⭐⭐⭐⭐ (Bagus)</option>
+                                <option value="3">⭐⭐⭐ (Cukup)</option>
+                                <option value="2">⭐⭐ (Kurang)</option>
+                                <option value="1">⭐ (Sangat Kurang)</option>
+                            </select>
+                        </div>
+
+                        <!-- Input Komentar -->
+                        <div class="mb-5">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Komentar / Testimoni</label>
+                            <textarea name="comment" rows="3" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-none text-sm" placeholder="Ceritakan pengalaman seru Anda..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 text-sm">
+                            Kirim Ulasan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: Daftar Ulasan -->
+            <div class="lg:col-span-2">
+                @if($totalReviews > 0)
+                    <!-- Kotak dengan Scroll jika ulasan banyak -->
+                    <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                        @foreach($event->reviews as $review)
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition group">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <!-- Avatar Inisial -->
+                                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-sm">
+                                        {{ strtoupper(substr($review->name ?? 'A', 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <h5 class="font-black text-slate-800 text-sm">{{ $review->name ?? 'Anonim' }}</h5>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ $review->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 px-2.5 py-1 rounded-lg text-sm border border-slate-100">
+                                    {{ str_repeat('⭐', $review->rating) }}
+                                </div>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-relaxed mt-2 pl-13">
+                                "{{ $review->comment }}"
+                            </p>
+                        </div>
+                        @endforeach
+                    </div>
+                @else
+                    <!-- Tampilan Jika Belum Ada Ulasan -->
+                    <div class="h-full flex flex-col items-center justify-center text-center p-10 bg-slate-50 rounded-2xl border-2 border-slate-200 border-dashed">
+                        <span class="text-5xl mb-4">💬</span>
+                        <h4 class="font-black text-slate-700 text-lg">Belum ada ulasan</h4>
+                        <p class="text-sm text-slate-500 mt-2 max-w-xs">Jadilah yang pertama memberikan ulasan dan rating untuk event ini!</p>
+                    </div>
+                @endif
+            </div>
+
+        </div>
+    </div>
+
 </main>
 @endsection

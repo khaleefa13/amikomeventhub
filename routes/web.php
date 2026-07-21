@@ -40,8 +40,8 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.process');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 //  Rute Pendaftaran HIMA
-Route::get('/daftar-hima', [AuthController::class, 'showRegisterHima'])->name('register.hima');
-Route::post('/daftar-hima', [AuthController::class, 'processRegisterHima'])->name('register.hima.process');
+Route::get('/daftar-tenant', [AuthController::class, 'showRegisterHima'])->name('register.hima');
+Route::post('/daftar-tenant', [AuthController::class, 'processRegisterHima'])->name('register.hima.process');
 
 // Google SSO
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
